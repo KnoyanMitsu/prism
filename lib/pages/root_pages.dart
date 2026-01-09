@@ -1,7 +1,7 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prism/layout/scaffold/scaffold_with_navbar.dart';
+import 'package:prism/layout/scaffold/scaffold_with_drawers.dart';
 import 'package:prism/pages/home_page.dart';
 import 'package:prism/pages/settings.dart';
 import 'package:prism/widgets/TheBestListTiles.dart';
@@ -36,7 +36,7 @@ class _RootPagesState extends State<RootPages> {
       );
     }
 
-    return ScaffoldWithNavbar(
+    return ScaffoldWithDrawers(
       titlePage: _titles[_currentIndex],
       borderRadius: 24,
       backgroundColor: Theme.of(context).colorScheme.surface,

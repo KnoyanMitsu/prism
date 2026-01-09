@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:prism/layout/scaffold/scaffold_session.dart';
 
-class ScaffoldWithNavbar extends StatefulWidget {
-  const ScaffoldWithNavbar({
+class ScaffoldWithDrawers extends StatefulWidget {
+  const ScaffoldWithDrawers({
     super.key,
     required this.listtile,
     required this.body,
@@ -24,10 +24,10 @@ class ScaffoldWithNavbar extends StatefulWidget {
   final List<Widget>? bottomListtile;
 
   @override
-  State<ScaffoldWithNavbar> createState() => _ScaffoldWithNavbarState();
+  State<ScaffoldWithDrawers> createState() => _ScaffoldWithDrawersState();
 }
 
-class _ScaffoldWithNavbarState extends State<ScaffoldWithNavbar>
+class _ScaffoldWithDrawersState extends State<ScaffoldWithDrawers>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final double _maxWidth = 300.0;
