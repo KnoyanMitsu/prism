@@ -6,7 +6,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: b2d979a09d343d0994427b1846846d5aa7d90bd9
+      resolved-ref: "8ca7798b59f574ad431767c1b839ca010815b8e1"
       url: "https://github.com/KnoyanMitsu/aceui.git"
     source: git
     version: "0.0.1"
