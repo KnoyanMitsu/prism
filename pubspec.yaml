@@ -1,0 +1,27 @@
+name: prism
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  aceui:
+    git:
+      url: https://github.com/KnoyanMitsu/aceui.git
+      ref: main
+  google_fonts: ^7.0.0
+  flutter_svg: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  assets:
+    - assets/icons/
+  uses-material-design: true
