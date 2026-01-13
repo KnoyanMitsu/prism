@@ -1,6 +1,7 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:prism/pages/posts_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,6 +11,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void postPage () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PostsPage()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +41,7 @@ class _HomePageState extends State<HomePage> {
           AceButton(
             color: Theme.of(context).colorScheme.primary,
             label: "Post it",
-            onPressed: () {},
+            onPressed: () {postPage();},
             colorText: Colors.white,
           ),
         ],

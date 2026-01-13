@@ -13,9 +13,19 @@ dependencies:
     git:
       url: https://github.com/KnoyanMitsu/aceui.git
       ref: main
-  google_fonts: ^7.0.0
+  google_fonts: ^7.0.1
   flutter_svg: ^2.2.3
+  image_picker: ^1.2.1
+  url_launcher: ^6.3.2
+  shared_preferences: ^2.5.4
+  app_links: ^7.0.0
+  twitter_api_v2: ^4.0.2
+  http: ^1.6.0
 
+
+dependency_overrides:
+  http: ^1.6.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
