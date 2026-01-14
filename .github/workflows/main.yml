@@ -26,6 +26,7 @@ jobs:
 
       - run: flutter pub get
       - run: flutter build apk --release
+      - run: mv build/app/outputs/flutter-apk/app-release.apk app-release.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-artifact
@@ -81,6 +82,8 @@ jobs:
 
   # 4. RELEASE (Hanya jalan kalau ada Tag v*)
   create-release:
+    permissions:
+      contents: write
     needs: [build-android, build-windows, build-linux]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
