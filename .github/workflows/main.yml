@@ -26,11 +26,10 @@ jobs:
 
       - run: flutter pub get
       - run: flutter build apk --release
-      - run: mv build/app/outputs/flutter-apk/app-release.apk Prism-Android.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-artifact
-          path: Prism-Android.apk
+          path: app-release.apk
 
   # 2. BUILD WINDOWS
   build-windows:
@@ -73,34 +72,12 @@ jobs:
       - run: flutter build linux --release
       
       # Bikin AppImage
-      - run: |
-          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage
-          mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-          mkdir -p AppDir/usr/share/applications
-          cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
-          
-          # Setup Icon dummy & Desktop file
-          # Pastikan path icon sesuai repo kamu (misal: assets/icon.png)
-          touch AppDir/usr/share/icons/hicolor/256x256/apps/prism.png
-          
-          echo "[Desktop Entry]" > AppDir/usr/share/applications/prism.desktop
-          echo "Type=Application" >> AppDir/usr/share/applications/prism.desktop
-          echo "Name=Prism" >> AppDir/usr/share/applications/prism.desktop
-          echo "Exec=prism" >> AppDir/usr/share/applications/prism.desktop
-          echo "Icon=prism" >> AppDir/usr/share/applications/prism.desktop
-          echo "Categories=Utility;" >> AppDir/usr/share/applications/prism.desktop
-          
-          # Generate
-          ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage --desktop-file AppDir/usr/share/applications/prism.desktop --icon-file AppDir/usr/share/icons/hicolor/256x256/apps/prism.png --executable AppDir/usr/bin/prism
-          
-          mv Prism-*.AppImage Prism-Linux.AppImage
+      - run: mv build/linux/x64/release/bundle/prism prism-linux
 
       - uses: actions/upload-artifact@v4
         with:
           name: linux-artifact
-          path: Prism-Linux.AppImage
+          path: prism-linux
 
   # 4. RELEASE (Hanya jalan kalau ada Tag v*)
   create-release:
