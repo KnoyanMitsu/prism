@@ -1,148 +1,107 @@
-name: Build Prism (Android, Windows, Linux)
+name: Build & Release Prism
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch: # Supaya bisa di-klik run manual
+    tags:
+      - "v*" # Trigger hanya jika push tag diawali 'v', misal v1.0.0
+  workflow_dispatch: # Tetap bisa jalan manual
 
 jobs:
-  # ---------------------------------------------------
-  # 1. BUILD ANDROID (APK)
-  # ---------------------------------------------------
+  # 1. BUILD ANDROID
   build-android:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
-          channel: 'stable'
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --release
-
-      # Upload hasil APK agar bisa didownload
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - run: flutter pub get
+      - run: flutter build apk --release
+      # Rename biar namanya jelas pas di-download
+      - run: mv build/app/outputs/flutter-apk/app-release.apk Prism-Android.apk
+      - uses: actions/upload-artifact@v4
         with:
-          name: Prism-Android
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: android-artifact
+          path: Prism-Android.apk
 
-  # ---------------------------------------------------
-  # 2. BUILD WINDOWS (EXE)
-  # ---------------------------------------------------
+  # 2. BUILD WINDOWS
   build-windows:
     runs-on: windows-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
-          channel: 'stable'
-
-      - name: Enable Windows Desktop
-        run: flutter config --enable-windows-desktop
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Build Windows EXE
-        run: flutter build windows --release
-
-      # Windows hasil buildnya berupa folder, jadi kita ZIP dulu
-      - name: Compress Build to Zip
-        run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath prism-windows.zip
-
-      - name: Upload Windows Zip
-        uses: actions/upload-artifact@v4
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath Prism-Windows.zip
+      - uses: actions/upload-artifact@v4
         with:
-          name: Prism-Windows
-          path: prism-windows.zip
+          name: windows-artifact
+          path: Prism-Windows.zip
 
-  # ---------------------------------------------------
-  # 3. BUILD LINUX (APPIMAGE)
-  # ---------------------------------------------------
+  # 3. BUILD LINUX
   build-linux:
-    # Gunakan Ubuntu 20.04 agar AppImage bisa jalan di distro lama & baru
-    runs-on: ubuntu-20.04 
+    runs-on: ubuntu-20.04
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Install library wajib Linux (GTK, Clang, CMake, Ninja)
-      - name: Install Linux Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
-          channel: 'stable'
-
-      - name: Enable Linux Desktop
-        run: flutter config --enable-linux-desktop
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Build Linux Binary
-        run: flutter build linux --release
-
-      # --- PROSES PEMBUATAN APPIMAGE ---
-      # Kita menggunakan tool 'linuxdeploy' untuk membungkus binary jadi AppImage
-      - name: Create AppImage
-        run: |
-          # 1. Download Tool LinuxDeploy
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
+      - run: flutter build linux --release
+      
+      # Bikin AppImage
+      - run: |
           wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
-          
-          # 2. Siapkan Folder AppDir
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
           mkdir -p AppDir/usr/share/applications
-
-          # 3. Copy Binary Flutter ke AppDir
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
           
-          # 4. Setup Icon & Desktop File (Menggunakan default flutter jika ada)
-          # Pastikan file linux/runner/assets/app_icon.png ada di repo kamu!
-          if [ -f "linux/runner/assets/app_icon.png" ]; then
-            cp linux/runner/assets/app_icon.png AppDir/usr/share/icons/hicolor/256x256/apps/prism.png
-          else
-            touch AppDir/usr/share/icons/hicolor/256x256/apps/prism.png # Dummy jika tidak ada
-          fi
-
-          # Buat file .desktop sederhana
+          # Setup Icon dummy & Desktop file
+          touch AppDir/usr/share/icons/hicolor/256x256/apps/prism.png
           echo "[Desktop Entry]" > AppDir/usr/share/applications/prism.desktop
           echo "Type=Application" >> AppDir/usr/share/applications/prism.desktop
           echo "Name=Prism" >> AppDir/usr/share/applications/prism.desktop
           echo "Exec=prism" >> AppDir/usr/share/applications/prism.desktop
           echo "Icon=prism" >> AppDir/usr/share/applications/prism.desktop
           echo "Categories=Utility;" >> AppDir/usr/share/applications/prism.desktop
-
-          # 5. Generate AppImage
-          # Kita arahkan executable ke nama binary (biasanya nama project di pubspec.yaml, misal 'prism')
+          
+          # Generate (Ganti 'prism' sesuai pubspec name kamu)
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage --desktop-file AppDir/usr/share/applications/prism.desktop --icon-file AppDir/usr/share/icons/hicolor/256x256/apps/prism.png --executable AppDir/usr/bin/prism
+          
+          # Rename biar rapi
+          mv Prism-*.AppImage Prism-Linux.AppImage
 
-      - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Prism-Linux-AppImage
-          path: Prism-*.AppImage
+          name: linux-artifact
+          path: Prism-Linux.AppImage
+
+  # 4. JOB KHUSUS RELEASE (Hanya jalan kalau ada Tag)
+  create-release:
+    needs: [build-android, build-windows, build-linux] # Tunggu semua selesai
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') # Syarat: Harus berupa Tag
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: releases
+          merge-multiple: true # Gabung semua file jadi satu folder
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: releases/* # Upload semua file yang sudah didownload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
