@@ -1,6 +1,6 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
-import 'package:prism/controller/all_in_one.dart';
+import 'package:prism/controller/the_prism.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});
@@ -109,7 +109,7 @@ class _PostsPageState extends State<PostsPage> {
             // Logic PillCount nanti bisa disambungin ke _text.text.length
             AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
             const SizedBox(width: 10),
-            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
+            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "∞"),
           ],
         ),
         const SizedBox(height: 20),
