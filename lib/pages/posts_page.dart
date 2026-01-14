@@ -109,7 +109,11 @@ class _PostsPageState extends State<PostsPage> {
             // Logic PillCount nanti bisa disambungin ke _text.text.length
             AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
             const SizedBox(width: 10),
-            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "∞"),
+            AcePillCount(
+              icon: "assets/icons/Bluesky.svg",
+              count: "∞",
+              limit: "",
+            ),
           ],
         ),
         const SizedBox(height: 20),
