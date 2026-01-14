@@ -1,9 +1,8 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
 import 'package:prism/controller/twitter_controller.dart';
-import 'package:prism/pages/settings/Twitter/twitter_api.dart';
+import 'package:prism/pages/settings/Twitter/twitter_login.dart';
 import 'package:prism/services/API/X/api_storage.dart';
-import 'package:prism/widget/card.dart';
 
 class TwitterAccount extends StatefulWidget {
   const TwitterAccount({super.key});
@@ -13,7 +12,6 @@ class TwitterAccount extends StatefulWidget {
 }
 
 class _TwitterAccountState extends State<TwitterAccount> {
-  @override
   final TwitterStorage _storage = TwitterStorage();
   final TwitterController _controller = TwitterController();
   String _name = "Guest";
@@ -21,7 +19,7 @@ class _TwitterAccountState extends State<TwitterAccount> {
   String _avatar = "https://i.imgur.com/tdi3NGa.png";
   String _usage = "";
   String _limit = "";
-  String _bio = "";
+
   int _followers = 0;
 
   void initState() {
@@ -42,7 +40,6 @@ class _TwitterAccountState extends State<TwitterAccount> {
             _name = "${cache['name']}";
             _username = "${cache['username']}";
             _avatar = "${cache['avatar']}";
-            _bio = "${cache['bio']}";
             _followers = cache['followers'];
           });
         }
@@ -54,7 +51,6 @@ class _TwitterAccountState extends State<TwitterAccount> {
               _name = "${user.name}";
               _username = "${user.username}";
               _avatar = "${user.profileImageUrl}";
-              _bio = "${user.description}";
               _followers = user.publicMetrics?.followersCount ?? 0;
             });
           }
@@ -66,7 +62,6 @@ class _TwitterAccountState extends State<TwitterAccount> {
             _name = "Guest";
             _username = "Guest";
             _avatar = "https://i.imgur.com/tdi3NGa.png";
-            _bio = "";
             _followers = 0;
           });
         }
@@ -113,7 +108,7 @@ class _TwitterAccountState extends State<TwitterAccount> {
     void apiPage() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const TwitterApi()),
+        MaterialPageRoute(builder: (context) => const TwitterLogin()),
       );
     }
 
@@ -123,9 +118,23 @@ class _TwitterAccountState extends State<TwitterAccount> {
         _name = "Guest";
         _username = "Guest";
         _avatar = "https://i.imgur.com/tdi3NGa.png";
-        _bio = "";
         _followers = 0;
       });
+    }
+
+    void logoutDialog() {
+      AceAlertPopup.show(
+        context,
+        title: "Logout",
+        btnText: "Yes, Logout",
+        color: Colors.red,
+        isCancel: true,
+        message: "Are you sure you want to logout?",
+        onPressed: () {
+          logout();
+          Navigator.pop(context);
+        },
+      );
     }
 
     return AceSimpleLayout(
@@ -208,7 +217,7 @@ class _TwitterAccountState extends State<TwitterAccount> {
         AceListTiles(
           title: "Logout",
           icon: Icons.logout,
-          onTap: () => logout(),
+          onTap: () => logoutDialog(),
           isActive: false,
         ),
       ],

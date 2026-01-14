@@ -176,7 +176,7 @@ class TwitterController {
       // --- SELESAI LOOPING ---
 
       // 3. Kirim Tweet dengan lampiran ID Media yang sudah dikumpulkan
-      final response = await _twitterApi!.tweetsService.createTweet(
+      await _twitterApi!.tweetsService.createTweet(
         text: text,
         media: v2.TweetMediaParam(mediaIds: mediaIds),
       );

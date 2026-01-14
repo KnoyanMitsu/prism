@@ -11,12 +11,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void postPage () {
+  void postPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const PostsPage()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,16 +33,18 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const Text(
-            "This app about to post your photo or caption to Facebook and Twitter (API access)",
+            "This app about to post your photo or caption to Bluesky and Twitter (API access)",
           ),
           const Text(
-            "Please login to your Facebook and Twitter account on settings in sidebar ",
+            "Please login to your Bluesky and Twitter account on settings in sidebar ",
           ),
           const SizedBox(height: 20),
           AceButton(
             color: Theme.of(context).colorScheme.primary,
             label: "Post it",
-            onPressed: () {postPage();},
+            onPressed: () {
+              postPage();
+            },
             colorText: Colors.white,
           ),
         ],

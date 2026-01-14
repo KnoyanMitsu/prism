@@ -1,8 +1,6 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
-import 'package:prism/controller/twitter_controller.dart';
-import 'package:prism/widget/four_upload_photo.dart';
-import 'package:prism/widget/pill_count.dart';
+import 'package:prism/controller/all_in_one.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});
@@ -13,10 +11,10 @@ class PostsPage extends StatefulWidget {
 
 class _PostsPageState extends State<PostsPage> {
   // Controller
-  final TwitterController _controller = TwitterController();
+  final ThePrismController _controller = ThePrismController();
   final TextEditingController _text = TextEditingController();
-  final FourUploadPhotoController _controllerUpload =
-      FourUploadPhotoController();
+  final AceFourUploadPhotoController _controllerUpload =
+      AceFourUploadPhotoController();
 
   bool _isLoading = false;
 
@@ -52,15 +50,7 @@ class _PostsPageState extends State<PostsPage> {
 
     String result;
 
-    // 3. Eksekusi Logic (Pakai await supaya ditungguin)
-    if (_controllerUpload.images.isNotEmpty) {
-      result = await _controller.postTweetWithImages(
-        _text.text,
-        _controllerUpload.images,
-      );
-    } else {
-      result = await _controller.postTweet(_text.text);
-    }
+    result = await _controller.broadcast(_text.text, _controllerUpload.images);
 
     // 4. Selesai Loading & Tampilkan Hasil
     if (mounted) {
@@ -107,7 +97,7 @@ class _PostsPageState extends State<PostsPage> {
 
         const SizedBox(height: 10), // Jarak dikit
 
-        FourUploadPhoto(controller: _controllerUpload),
+        AceFourUploadPhoto(controller: _controllerUpload),
 
         // HATI-HATI: Spacer() hanya jalan kalau AceSimpleLayout pakai Column dengan fix height.
         // Kalau AceSimpleLayout pakai ListView (Scrollable), Spacer() akan bikin ERROR.
@@ -117,9 +107,9 @@ class _PostsPageState extends State<PostsPage> {
         Row(
           children: [
             // Logic PillCount nanti bisa disambungin ke _text.text.length
-            PillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
+            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
             const SizedBox(width: 10),
-            PillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
+            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
           ],
         ),
         const SizedBox(height: 20),

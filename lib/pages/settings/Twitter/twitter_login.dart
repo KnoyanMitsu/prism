@@ -2,17 +2,15 @@ import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
 import 'package:prism/controller/twitter_controller.dart';
 import 'package:prism/pages/settings/Twitter/twitter_api_notice.dart';
-import 'package:prism/services/API/X/api_storage.dart';
 
-class TwitterApi extends StatefulWidget {
-  const TwitterApi({super.key});
+class TwitterLogin extends StatefulWidget {
+  const TwitterLogin({super.key});
 
   @override
-  State<TwitterApi> createState() => _TwitterApiState();
+  State<TwitterLogin> createState() => _TwitterLoginState();
 }
 
-class _TwitterApiState extends State<TwitterApi> {
-  final TwitterStorage _storage = TwitterStorage();
+class _TwitterLoginState extends State<TwitterLogin> {
   // 1. INSTANCE CONTROLLER
   final TwitterController _controller = TwitterController();
 
@@ -22,7 +20,6 @@ class _TwitterApiState extends State<TwitterApi> {
   final _BearerTokenCtrl = TextEditingController();
 
   String _status = "Ready";
-  bool _isLoggedIn = false;
 
   @override
   void initState() {
@@ -32,25 +29,10 @@ class _TwitterApiState extends State<TwitterApi> {
     _controller.init().then((isLoginSuccess) async {
       // Tambahkan 'async' di sini
       if (isLoginSuccess) {
-        // --- STEP A: LOAD CACHE (Tampilkan Instan) ---
-        // Kita butuh instansi storage di sini atau buat fungsi getter di controller
-        // Anggap Anda punya _storage instance di halaman ini:
-        final cache = await _storage
-            .getCachedUserData(); // PENTING: Pakai 'await'
-
-        if (mounted && cache['name'] != null) {
-          setState(() {
-            _status = "Hello, ${cache['name']}!";
-            _isLoggedIn = true;
-          });
-        }
-
-        _controller.checkUser().then((user) {
-          if (user != null && mounted) {
+        _controller.init().then((status) {
+          if (status) {
             setState(() {
-              // Timpa tampilan lama dengan data terbaru dari internet
-              _status = "Hello, ${user.name}!";
-              _isLoggedIn = true;
+              _status = "Already Login";
             });
           }
         });
@@ -58,7 +40,7 @@ class _TwitterApiState extends State<TwitterApi> {
         // Kalau token tidak ada
         if (mounted) {
           setState(() {
-            _status = "Silakan Login Terlebih Dahulu";
+            _status = "Not Login";
             _apiKeyCtrl.text = "";
             _apiSecretCtrl.text = "";
           });

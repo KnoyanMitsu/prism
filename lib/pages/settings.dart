@@ -19,11 +19,9 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return AceFormLayoutWithoutScarf(
+    return AceSimpleLayoutWithoutScarf(
       title: "Settings",
-      subtitle: "Settings for Prism",
-      titleColor: Theme.of(context).colorScheme.primary,
-      children: [
+      childern: [
         AceListTiles(
           title: 'Account',
           icon: Icons.account_circle,

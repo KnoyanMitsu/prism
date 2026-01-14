@@ -1,5 +1,6 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
+import 'package:prism/pages/settings/Bluesky/bluesky_account.dart';
 import 'package:prism/pages/settings/Twitter/twitter_account.dart';
 
 class MainAccounts extends StatelessWidget {
@@ -14,6 +15,13 @@ class MainAccounts extends StatelessWidget {
       );
     }
 
+    void blueskyPage() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const BlueskyAccount()),
+      );
+    }
+
     return AceSimpleLayout(
       title: 'Account',
       childern: [
@@ -21,6 +29,12 @@ class MainAccounts extends StatelessWidget {
           title: "Twitter/X",
           icon: Icons.account_box_outlined,
           onTap: () => twitterPage(),
+          isActive: false,
+        ),
+        AceListTiles(
+          title: "Bluesky",
+          icon: Icons.account_box_outlined,
+          onTap: () => blueskyPage(),
           isActive: false,
         ),
       ],

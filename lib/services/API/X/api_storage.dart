@@ -93,8 +93,8 @@ class TwitterStorage {
   Future<Map<String, dynamic>> getUsageMonthly() async {
     final prefs = await SharedPreferences.getInstance();
     return {
-      'used': prefs.getInt(_kUsageused),
-      'limit': prefs.getInt(_kUsageLimit),
+      'used': prefs.getString(_kUsageused),
+      'limit': prefs.getString(_kUsageLimit),
     };
   }
 
