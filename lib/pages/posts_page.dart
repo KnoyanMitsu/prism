@@ -1,6 +1,7 @@
 import 'package:aceui/aceui.dart';
 import 'package:flutter/material.dart';
 import 'package:prism/controller/the_prism.dart';
+import 'package:prism/services/API/X/api_storage.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});
@@ -12,16 +13,25 @@ class PostsPage extends StatefulWidget {
 class _PostsPageState extends State<PostsPage> {
   // Controller
   final ThePrismController _controller = ThePrismController();
+  final TwitterStorage _twitterController = TwitterStorage();
   final TextEditingController _text = TextEditingController();
   final AceFourUploadPhotoController _controllerUpload =
       AceFourUploadPhotoController();
 
   bool _isLoading = false;
+  String _usageTwitter = '';
+  String _limitTwitter = '';
 
   @override
   void initState() {
     super.initState();
     _controller.init();
+    _twitterController.getUsageMonthly().then((value) {
+      setState(() {
+        _usageTwitter = value['used'] ?? '';
+        _limitTwitter = value['limit'] ?? '';
+      });
+    });
   }
 
   // Wajib dispose controller biar memori HP gak bocor
@@ -63,9 +73,8 @@ class _PostsPageState extends State<PostsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result),
-          backgroundColor: result.contains("Berhasil")
-              ? Colors.green
-              : Colors.red,
+          backgroundColor:
+              result.contains("Berhasil") ? Colors.green : Colors.red,
         ),
       );
 
@@ -107,7 +116,11 @@ class _PostsPageState extends State<PostsPage> {
         Row(
           children: [
             // Logic PillCount nanti bisa disambungin ke _text.text.length
-            AcePillCount(icon: "assets/icons/X.svg", count: "1", limit: "1"),
+            AcePillCount(
+              icon: "assets/icons/X.svg",
+              count: _usageTwitter,
+              limit: _limitTwitter,
+            ),
             const SizedBox(width: 10),
             AcePillCount(
               icon: "assets/icons/Bluesky.svg",
@@ -120,9 +133,8 @@ class _PostsPageState extends State<PostsPage> {
         AceButton(
           color: Theme.of(context).colorScheme.primary,
           label: "Post it",
-          onPressed: _isLoading
-              ? null
-              : _postTweet, // Disable tombol saat loading
+          onPressed:
+              _isLoading ? null : _postTweet, // Disable tombol saat loading
           isLoading: _isLoading,
           colorText: Theme.of(context).colorScheme.onPrimary,
         ),

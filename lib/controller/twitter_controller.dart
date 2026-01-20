@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:prism/controller/imagetogif.dart';
 import 'package:prism/services/API/X/api_storage.dart';
 import 'package:twitter_api_v2/twitter_api_v2.dart' as v2;
 import 'package:oauth1/oauth1.dart' as oauth1;
@@ -15,9 +16,11 @@ class TwitterController {
   final TwitterStorage _storage = TwitterStorage();
   final AppLinks _appLinks = AppLinks();
   StreamSubscription? _sub;
+  bool _gifEnabled = false;
 
   Future<bool> init() async {
     final creds = await _storage.getCredentials();
+    _gifEnabled = await _storage.getGifEnabled();
     final apiKey = creds['apiKey'];
     final apiSecret = creds['apiSecret'];
     final token = creds['accessToken'];
@@ -159,23 +162,21 @@ class TwitterController {
 
     try {
       List<String> mediaIds = [];
-
-      // --- MULAI LOOPING ---
-      // Kita loop array 'images' yang dari UI tadi
       for (var file in images) {
-        print("Sedang mengupload: ${file.path}");
+        bool isStaticImage = file.path.endsWith('.jpg') ||
+            file.path.endsWith('.jpeg') ||
+            file.path.endsWith('.png');
+        if (_gifEnabled && isStaticImage) {
+          final gifFile = await GifMaker.convertImageToGif(file);
+          if (gifFile == null) return "Gagal membuat GIF";
+          file = gifFile;
+        }
 
-        // 1. Upload Media (Twitter pakai endpoint V1.1 untuk upload media)
-        // Library twitter_api_v2 biasanya menyediakan akses ke v1 service
         final uploadedMedia = await _twitterApi!.mediaService.uploadImage(
           file: file,
         );
-        // 2. Ambil ID-nya dan masukkan ke penampungan
         mediaIds.add(uploadedMedia.data.mediaId);
       }
-      // --- SELESAI LOOPING ---
-
-      // 3. Kirim Tweet dengan lampiran ID Media yang sudah dikumpulkan
       await _twitterApi!.tweetsService.createTweet(
         text: text,
         media: v2.TweetMediaParam(mediaIds: mediaIds),

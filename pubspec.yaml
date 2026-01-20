@@ -25,6 +25,7 @@ dependencies:
     git:
       url: https://github.com/myConsciousness/atproto.dart.git
       path: packages/bluesky  # <--- WAJIB ADA KARENA MONOREPO
+  image: ^4.7.2
 
 
 dependency_overrides:

@@ -15,6 +15,7 @@ class TwitterStorage {
   static const String _kFollowers = 'user_followers';
   static const String _kBearerToken = 'bearer_token';
   static const String _kUsageused = 'usage_used';
+  static const String _kEnabledGif = 'gif_enabled';
   static const String _kUsageLimit = 'usage_limit';
   // Simpan API Key & Secret (Inputan User)
   Future<void> saveApiKeys(String key, String secret) async {
@@ -102,6 +103,21 @@ class TwitterStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kUsageused, used);
     await prefs.setString(_kUsageLimit, limit);
+  }
+
+  Future<void> enabledGif() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kEnabledGif, true);
+  }
+
+  Future<void> disabledGif() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kEnabledGif, false);
+  }
+
+  Future<bool> getGifEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_kEnabledGif) ?? false;
   }
 
   Future<void> clearSession() async {
