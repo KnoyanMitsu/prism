@@ -38,7 +38,6 @@ class _PostsPageState extends State<PostsPage> {
   @override
   void dispose() {
     _text.dispose();
-    _controller.dispose();
     _controllerUpload.dispose();
     super.dispose();
   }
